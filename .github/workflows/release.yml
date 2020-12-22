@@ -62,7 +62,6 @@ jobs:
 
       - name: Check for new release
         run: |
-          cat version-before/version-before
           echo VERSION_BEFORE=$(cat version-before/version-before) >> $GITHUB_ENV
           echo VERSION_AFTER=$(cat version-after/version-after) >> $GITHUB_ENV
 
@@ -94,7 +93,7 @@ jobs:
           mix deps.get
           mix compile
           mix release
-          tar -czf ../realtime-${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz -C ./_build/prod/rel realtime
+          tar -czf ../realtime-v${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz -C ./_build/prod/rel realtime
         env:
           MIX_ENV: prod
 
@@ -109,8 +108,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./realtime-${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz
-          asset_name: realtime-${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz
+          asset_path: ./realtime-v${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz
+          asset_name: realtime-v${{ env.VERSION_AFTER }}-x86_64-linux-gnu.tar.gz
           asset_content_type: application/gzip
 
   upload-aarch64:
@@ -126,7 +125,6 @@ jobs:
 
       - name: Check for new release
         run: |
-          cat version-before/version-before
           echo VERSION_BEFORE=$(cat version-before/version-before) >> $GITHUB_ENV
           echo VERSION_AFTER=$(cat version-after/version-after) >> $GITHUB_ENV
 
@@ -159,7 +157,7 @@ jobs:
             mix deps.get
             mix deps.compile
             mix release
-            tar -czf ../realtime-${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz -C ./_build/prod/rel realtime
+            tar -czf ../realtime-v${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz -C ./_build/prod/rel realtime
 
       - name: Get upload url
         if: env.VERSION_BEFORE != env.VERSION_AFTER
@@ -172,8 +170,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./realtime-${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz
-          asset_name: realtime-${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz
+          asset_path: ./realtime-v${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz
+          asset_name: realtime-v${{ env.VERSION_AFTER }}-aarch64-linux-gnu.tar.gz
           asset_content_type: application/gzip
 
   upload-docker:
@@ -189,16 +187,11 @@ jobs:
 
       - name: Check for new release
         run: |
-          cat version-before/version-before
           echo VERSION_BEFORE=$(cat version-before/version-before) >> $GITHUB_ENV
           echo VERSION_AFTER=$(cat version-after/version-after) >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
         if: env.VERSION_BEFORE != env.VERSION_AFTER
-
-      - name: Get version
-        if: env.VERSION_BEFORE != env.VERSION_AFTER
-        run: echo VERSION=$(curl --silent https://api.github.com/repos/soedirgo/realtime/releases/latest | jq .name --raw-output) >> $GITHUB_ENV
 
       - name: Upload build to Docker Hub
         if: env.VERSION_BEFORE != env.VERSION_AFTER
