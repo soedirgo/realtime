@@ -90,7 +90,7 @@ jobs:
         if: env.VERSION_BEFORE != env.VERSION_AFTER
         run: |
           cd server
-          sed -i '' "s/@version \".*\"/@version \"${{ env.VERSION_AFTER }}\"/" mix.exs
+          sed -i "s/@version \".*\"/@version \"${{ env.VERSION_AFTER }}\"/" mix.exs
           mix deps.get
           mix compile
           mix release
